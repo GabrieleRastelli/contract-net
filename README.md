@@ -1,2 +1,2 @@
 # contract-net
-An implementation of the Contract Net protocol using LightTS tuple-based middleware
+An implementation of the Contract Net protocol using LighTS tuple-based middleware.
