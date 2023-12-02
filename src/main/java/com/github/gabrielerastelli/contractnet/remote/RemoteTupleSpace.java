@@ -98,8 +98,8 @@ public class RemoteTupleSpace extends UnicastRemoteObject implements IRemoteTupl
     }
 
 
-    public static IRemoteTupleSpace startTupleSpace(String name) throws Exception {
-        IRemoteTupleSpace remoteTupleSpace = new RemoteTupleSpace(name);
+    public static IRemoteTupleSpace startTupleSpace() throws Exception {
+        IRemoteTupleSpace remoteTupleSpace = new RemoteTupleSpace("TupleSpace");
 
         try {
             LocateRegistry.createRegistry(1099);
@@ -108,7 +108,7 @@ public class RemoteTupleSpace extends UnicastRemoteObject implements IRemoteTupl
             log.warn("Java RMI registry already exists.");
         }
 
-        Naming.rebind("//localhost/" + name, remoteTupleSpace);
+        Naming.rebind("//localhost/TupleSpace", remoteTupleSpace);
         log.info("Remote TupleSpace registered on //localhost:1099/TupleSpace.");
 
         return remoteTupleSpace;
