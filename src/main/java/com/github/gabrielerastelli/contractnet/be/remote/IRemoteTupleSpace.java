@@ -1,4 +1,4 @@
-package com.github.gabrielerastelli.contractnet.remote;
+package com.github.gabrielerastelli.contractnet.be.remote;
 
 import lights.interfaces.ITuple;
 import lights.interfaces.TupleSpaceException;

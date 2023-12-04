@@ -1,4 +1,4 @@
-package com.github.gabrielerastelli.contractnet.server;
+package com.github.gabrielerastelli.contractnet.be.server;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class RandomServerGenerator implements ServerGenerator {
         for(int i = 0; i < numberOfServers; ++i) {
             String ip = random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256);
             int numberOfThreads = random.nextInt(4 - 1) + 1;
-            servers.add(new Server(ip, numberOfThreads));
+            servers.add(new Server(ip, numberOfThreads, new ArrayList<>()));
         }
 
         return servers;

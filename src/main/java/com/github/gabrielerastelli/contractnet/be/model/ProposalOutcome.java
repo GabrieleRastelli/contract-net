@@ -1,4 +1,4 @@
-package com.github.gabrielerastelli.contractnet.model;
+package com.github.gabrielerastelli.contractnet.be.model;
 
 import lights.Field;
 import lights.Tuple;

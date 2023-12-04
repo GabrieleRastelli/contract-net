@@ -1,9 +1,11 @@
-package com.github.gabrielerastelli.contractnet.server;
+package com.github.gabrielerastelli.contractnet.be.server;
 
-import com.github.gabrielerastelli.contractnet.model.*;
-import com.github.gabrielerastelli.contractnet.remote.IRemoteTupleSpace;
-import com.github.gabrielerastelli.contractnet.remote.RemoteClient;
-import com.github.gabrielerastelli.contractnet.task.Task;
+import com.github.gabrielerastelli.contractnet.be.model.*;
+import com.github.gabrielerastelli.contractnet.be.remote.IRemoteTupleSpace;
+import com.github.gabrielerastelli.contractnet.be.remote.RemoteClient;
+import com.github.gabrielerastelli.contractnet.be.task.Task;
+import com.github.gabrielerastelli.contractnet.interfaces.ServerPublisher;
+import com.github.gabrielerastelli.contractnet.interfaces.ServerUpdateListener;
 import lights.interfaces.TupleSpaceException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,11 +28,13 @@ import java.util.concurrent.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Server implements Runnable {
+public class Server implements Runnable, ServerPublisher {
 
     String ip;
 
     int numberOfThreads;
+
+    List<ServerUpdateListener> listeners;
 
     public void run() {
         IRemoteTupleSpace space;
@@ -51,6 +55,8 @@ public class Server implements Runnable {
 
         List<Future<String>> currentWorkload = new ArrayList<>();
 
+        notifyUpdate(this, 0);
+
         RemoteClient remoteClient = new RemoteClient(space);
         while (true) {
             Iterator<Future<String>> i = currentWorkload.iterator();
@@ -63,6 +69,7 @@ public class Server implements Runnable {
                         i.remove();
                         log.info("[{}] Completed task: {}, putting confirmation in tuple space", ip, taskId);
                         remoteClient.outTuple(new TaskCompletion(taskId, ip));
+                        notifyUpdate(this, currentWorkload.size());
                     }
                 } catch (RemoteException | TupleSpaceException | InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
@@ -77,10 +84,11 @@ public class Server implements Runnable {
                         remoteClient.outTuple(new Proposal(Decision.ACCEPT, cfp.getTaskId(), ip));
                         ProposalOutcome proposalOutcome = remoteClient.readProposalOutcome(ip);
                         log.info("[{}] Got an outcome for my proposal for task: {}, outcome: {}", ip,
-                                cfp.getTaskId(), proposalOutcome.getDecision().name());
+                            cfp.getTaskId(), proposalOutcome.getDecision().name());
                         if(Decision.ACCEPT.equals(proposalOutcome.getDecision())) {
                             Callable<String> task = Task.getCallableTask(cfp.getTaskId(), cfp.getExecutionTime());
                             currentWorkload.add(executor.submit(task));
+                            notifyUpdate(this, currentWorkload.size());
                         }
                     } else {
                         //log.info("[{}] Rejecting call for proposal for task: {}", ip, cfp.getTaskId());
@@ -94,4 +102,15 @@ public class Server implements Runnable {
         }
     }
 
+    @Override
+    public void addUpdateListener(ServerUpdateListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void notifyUpdate(Server server, int currentWorkload) {
+        for(ServerUpdateListener listener : listeners) {
+            listener.onUpdate(server, currentWorkload);
+        }
+    }
 }

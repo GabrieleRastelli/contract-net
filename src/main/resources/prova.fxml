@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane prefHeight="800.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.gabrielerastelli.contractnet.ui.UIController">
+   <children>
+      <TableView fx:id="taskTableView" minWidth="350.0" prefHeight="800.0" prefWidth="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <columns>
+            <TableColumn fx:id="taskId" text="Task">
+               <cellValueFactory>
+                  <PropertyValueFactory property="taskId" />
+               </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="status" text="Status">
+               <cellValueFactory>
+                  <PropertyValueFactory property="status" />
+               </cellValueFactory>
+            </TableColumn>
+         </columns>
+      </TableView>
+      <TableView fx:id="serverTableView" layoutX="350.0" minWidth="350" prefHeight="416.0" prefWidth="350.0">
+         <columns>
+            <TableColumn fx:id="serverIp" text="Server">
+               <cellValueFactory>
+                  <PropertyValueFactory property="serverIp" />
+               </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="currentWorkload" prefWidth="121.0" text="Current workload">
+               <cellValueFactory>
+                  <PropertyValueFactory property="currentWorkload" />
+               </cellValueFactory>
+            </TableColumn>
+         </columns>
+      </TableView>
+      <LineChart fx:id="serverWorkloadLineChart" layoutX="350.0" layoutY="416.0" prefHeight="400.0" prefWidth="500.0">
+        <xAxis>
+          <NumberAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </LineChart>
+      <ComboBox fx:id="serverWorkloadComboBox" layoutX="700.0" layoutY="391.0" prefWidth="150.0" onAction="#handleDropdownAction"/>
+   </children>
+</AnchorPane>

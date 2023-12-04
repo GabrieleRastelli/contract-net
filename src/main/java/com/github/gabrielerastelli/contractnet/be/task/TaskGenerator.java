@@ -1,4 +1,4 @@
-package com.github.gabrielerastelli.contractnet.task;
+package com.github.gabrielerastelli.contractnet.be.task;
 
 import java.util.List;
 

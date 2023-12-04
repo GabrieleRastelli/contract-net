@@ -1,15 +1,13 @@
-package com.github.gabrielerastelli.contractnet;
+package com.github.gabrielerastelli.contractnet.be;
 
-import com.github.gabrielerastelli.contractnet.model.*;
-import com.github.gabrielerastelli.contractnet.remote.IRemoteTupleSpace;
-import com.github.gabrielerastelli.contractnet.remote.RemoteClient;
-import com.github.gabrielerastelli.contractnet.remote.RemoteTupleSpace;
-import com.github.gabrielerastelli.contractnet.server.Server;
-import com.github.gabrielerastelli.contractnet.server.ServerGenerator;
-import com.github.gabrielerastelli.contractnet.server.factory.ServerGeneratorFactory;
-import com.github.gabrielerastelli.contractnet.task.Task;
-import com.github.gabrielerastelli.contractnet.task.TaskGenerator;
-import com.github.gabrielerastelli.contractnet.task.factory.TaskGeneratorFactory;
+import com.github.gabrielerastelli.contractnet.be.model.*;
+import com.github.gabrielerastelli.contractnet.be.remote.IRemoteTupleSpace;
+import com.github.gabrielerastelli.contractnet.be.remote.RemoteClient;
+import com.github.gabrielerastelli.contractnet.be.remote.RemoteTupleSpace;
+import com.github.gabrielerastelli.contractnet.be.server.Server;
+import com.github.gabrielerastelli.contractnet.be.task.Task;
+import com.github.gabrielerastelli.contractnet.interfaces.TaskPublisher;
+import com.github.gabrielerastelli.contractnet.interfaces.TaskUpdateListener;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,27 +22,21 @@ import java.util.concurrent.Executors;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class MainService {
+public class Simulation implements TaskPublisher {
 
-    ServerGeneratorFactory serverGeneratorFactory;
+    List<TaskUpdateListener> listeners;
 
-    TaskGeneratorFactory taskGeneratorFactory;
-
-    public void startSimulation() throws Exception {
+    public void startSimulation(List<Task> tasks, List<Server> servers) throws Exception {
         IRemoteTupleSpace space = RemoteTupleSpace.startTupleSpace();
 
-        /* create servers */
-        ServerGenerator serverGenerator = serverGeneratorFactory.createServerGenerator();
-        List<Server> servers = serverGenerator.createServers();
-
-        ExecutorService executor = Executors.newFixedThreadPool(servers.size());
+        ExecutorService executor = Executors.newFixedThreadPool(servers.size(), r -> {
+            Thread t = Executors.defaultThreadFactory().newThread(r);
+            t.setDaemon(true);
+            return t;
+        });
         for(Server server : servers) {
             executor.submit(server);
         }
-
-        /* create tasks */
-        TaskGenerator taskGenerator = taskGeneratorFactory.createTaskGenerator();
-        List<Task> tasks = taskGenerator.createTasks();
 
         RemoteClient remoteClient = new RemoteClient(space);
 
@@ -56,13 +48,13 @@ public class MainService {
             CallForProposal cfp = new CallForProposal(t.getId(), t.getExecutionTime());
             remoteClient.outTuple(cfp);
             taskAssignedMap.put(t.getId(), false);
+            notifyUpdate(t.getId(), "new");
         }
 
-        /* there are still some task to execute */
-        while(completedTasks != tasks.size()) {
-            Proposal[] proposals = remoteClient.readProposals();
+        Proposal[] proposals;
+        while (((proposals = remoteClient.readProposals()) != null && proposals.length != 0) || completedTasks != tasks.size()) {
 
-            if (proposals == null || proposals.length == 0) {
+            if(proposals == null || proposals.length == 0) {
                 continue;
             }
 
@@ -81,6 +73,8 @@ public class MainService {
 
                         log.info("Accepting proposal for task: {} from server: {}", proposal.getTaskId(), proposal.getServerIp());
                         remoteClient.outTuple(new ProposalOutcome(Decision.ACCEPT, proposal.getTaskId(), proposal.getServerIp()));
+
+                        notifyUpdate(proposal.getTaskId(), "assigned");
                     }
                 }
             }
@@ -99,9 +93,24 @@ public class MainService {
             for(TaskCompletion t1 : t) {
                 log.info("Task: {} was completed by server: {}", t1.getTaskId(), t1.getServerIp());
                 ++tasksCompleted;
+                notifyUpdate(t1.getTaskId(), "completed");
             }
         }
 
         log.info("All tasks have been completed.");
+    }
+
+    @Override
+    public void addUpdateListener(TaskUpdateListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void notifyUpdate(String taskId, String status) {
+        log.debug("Notifying listeners about task: {}", taskId);
+
+        for(TaskUpdateListener listener : listeners) {
+            listener.onUpdate(taskId, status);
+        }
     }
 }

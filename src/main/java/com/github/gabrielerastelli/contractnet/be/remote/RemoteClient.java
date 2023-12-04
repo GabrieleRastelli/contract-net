@@ -1,6 +1,6 @@
-package com.github.gabrielerastelli.contractnet.remote;
+package com.github.gabrielerastelli.contractnet.be.remote;
 
-import com.github.gabrielerastelli.contractnet.model.*;
+import com.github.gabrielerastelli.contractnet.be.model.*;
 import lights.Field;
 import lights.Tuple;
 import lights.interfaces.ITuple;
