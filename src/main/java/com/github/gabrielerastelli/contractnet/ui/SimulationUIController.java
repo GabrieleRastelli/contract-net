@@ -17,6 +17,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import lombok.AccessLevel;
@@ -28,7 +29,7 @@ import java.util.Comparator;
 
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UIController implements TaskUpdateListener, ServerUpdateListener {
+public class SimulationUIController implements TaskUpdateListener, ServerUpdateListener {
 
     @FXML
     TableView<TaskStatus> taskTableView;
@@ -53,6 +54,9 @@ public class UIController implements TaskUpdateListener, ServerUpdateListener {
 
     @FXML
     LineChart<Number, Number> serverWorkloadLineChart;
+
+    @FXML
+    Label totalExecutionTime;
 
     final ObservableList<TaskStatus> tasks = FXCollections.observableArrayList();
 
@@ -165,5 +169,9 @@ public class UIController implements TaskUpdateListener, ServerUpdateListener {
             }
         }
         return null;
+    }
+
+    public void updateTotalExecutionTime(String text) {
+        Platform.runLater(() -> totalExecutionTime.setText(text));
     }
 }

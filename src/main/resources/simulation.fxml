@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<AnchorPane prefHeight="800.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.gabrielerastelli.contractnet.ui.UIController">
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="800.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.gabrielerastelli.contractnet.ui.SimulationUIController">
    <children>
       <TableView fx:id="taskTableView" minWidth="350.0" prefHeight="800.0" prefWidth="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columns>
@@ -43,6 +44,14 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </LineChart>
-      <ComboBox fx:id="serverWorkloadComboBox" layoutX="700.0" layoutY="391.0" prefWidth="150.0" onAction="#handleDropdownAction"/>
+      <ComboBox fx:id="serverWorkloadComboBox" layoutX="700.0" layoutY="391.0" onAction="#handleDropdownAction" prefWidth="150.0" />
+      <Label layoutX="699.0" layoutY="-4.0" text="Execution time (s):">
+         <font>
+            <Font size="24.0" />
+         </font></Label>
+      <Label fx:id="totalExecutionTime" layoutX="699.0" layoutY="25.0" prefHeight="18.0" prefWidth="81.0" text="">
+         <font>
+            <Font size="24.0" />
+         </font></Label>
    </children>
 </AnchorPane>
