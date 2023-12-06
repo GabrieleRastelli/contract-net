@@ -46,9 +46,9 @@ public class UIFX extends Application {
         primaryStage.show();
     }
 
-    public void showSimulationPage(Integer numberOfServers, Integer numberOfTasks, Integer tasksDuration, String simulationType) throws IOException {
-        log.info("Number of servers: {}, number of tasks: {}, tasks duration: {}, simulation type: {}",
-                numberOfServers, numberOfTasks, tasksDuration, simulationType);
+    public void showSimulationPage(Integer numberOfServers, Integer numberOfThreads, Integer numberOfTasks, Integer tasksDuration, String simulationType) throws IOException {
+        log.info("Number of servers: {}, number of threads: {}, number of tasks: {}, tasks duration: {}, simulation type: {}",
+                numberOfServers, numberOfThreads, numberOfTasks, tasksDuration, simulationType);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/simulation.fxml"));
         Parent root = loader.load();
@@ -66,7 +66,7 @@ public class UIFX extends Application {
             Simulation simulation = new Simulation(new ArrayList<>());
             controller.setTaskPublisher(simulation);
 
-            List<Server> servers = new ServerGeneratorFactory().createServerGenerator().createServers();
+            List<Server> servers = new ServerGeneratorFactory().createServerGenerator().createServers(numberOfServers, numberOfThreads);
             for (Server server : servers) {
                 controller.setServerPublisher(server);
             }
@@ -74,7 +74,7 @@ public class UIFX extends Application {
             StopWatch watch = new StopWatch();
             watch.start();
             try {
-                simulation.startSimulation(new TaskGeneratorFactory().createTaskGenerator().createTasks(), servers);
+                simulation.startSimulation(new TaskGeneratorFactory().createTaskGenerator().createTasks(numberOfTasks, tasksDuration * 1000), servers);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

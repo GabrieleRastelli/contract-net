@@ -23,6 +23,15 @@ public class HomepageUIController {
     private Spinner<Integer> numberOfServersSpinner;
 
     @FXML
+    private CheckBox randomNumberOfThreadsCheckBox;
+
+    @FXML
+    private Text numberOfThreadsText;
+
+    @FXML
+    private Spinner<Integer> numberOfThreadsSpinner;
+
+    @FXML
     private CheckBox randomNumberOfTasksCheckBox;
 
     @FXML
@@ -49,8 +58,8 @@ public class HomepageUIController {
 
     @FXML
     private void showSimulationPage() throws IOException {
-        mainApp.showSimulationPage(numberOfServersSpinner.getValue(), numberOfTasksSpinner.getValue(),
-                taskDurationSpinner.getValue(), simulationTypeComboBox.getValue());
+        mainApp.showSimulationPage(numberOfServersSpinner.getValue(), numberOfThreadsSpinner.getValue(),
+                numberOfTasksSpinner.getValue(), taskDurationSpinner.getValue(), simulationTypeComboBox.getValue());
     }
 
     @FXML
@@ -58,6 +67,11 @@ public class HomepageUIController {
         randomNumberOfServersCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             numberOfServersText.setVisible(!newValue);
             numberOfServersSpinner.setVisible(!newValue);
+        });
+
+        randomNumberOfThreadsCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            numberOfThreadsText.setVisible(!newValue);
+            numberOfThreadsSpinner.setVisible(!newValue);
         });
 
         randomNumberOfTasksCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {

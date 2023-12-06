@@ -13,22 +13,29 @@
          </valueFactory>
       </Spinner>
       <Text fx:id="numberOfServersText" layoutX="23.0" layoutY="89.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of servers" visible="false" />
-      <CheckBox fx:id="randomNumberOfTasksCheckBox" layoutX="226.0" layoutY="40.0" mnemonicParsing="false" selected="true" text="Random number of tasks" />
-      <Spinner fx:id="numberOfTasksSpinner" layoutX="227.0" layoutY="93.0" promptText="Enter integer" visible="false">
+      <CheckBox fx:id="randomNumberOfTasksCheckBox" layoutX="418.0" layoutY="37.0" mnemonicParsing="false" selected="true" text="Random number of tasks" />
+      <Spinner fx:id="numberOfTasksSpinner" layoutX="419.0" layoutY="90.0" promptText="Enter integer" visible="false">
          <valueFactory>
             <SpinnerValueFactory.IntegerSpinnerValueFactory max="100" min="0" />
          </valueFactory>
       </Spinner>
-      <Text fx:id="numberOfTasksText" layoutX="227.0" layoutY="89.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of tasks" visible="false" />
-      <CheckBox fx:id="randomTaskDurationCheckBox" layoutX="424.0" layoutY="42.0" selected="true" text="Random tasks duration" />
-      <Spinner fx:id="taskDurationSpinner" layoutX="421.0" layoutY="93.0" promptText="Enter integer" visible="false">
+      <CheckBox fx:id="randomNumberOfThreadsCheckBox" layoutX="13.0" layoutY="146.0" mnemonicParsing="false" selected="true" text="Random number of threads" />
+      <Spinner fx:id="numberOfThreadsSpinner" layoutX="22.0" layoutY="199.0" promptText="Enter integer" visible="false">
          <valueFactory>
             <SpinnerValueFactory.IntegerSpinnerValueFactory max="100" min="0" />
          </valueFactory>
       </Spinner>
-      <Text fx:id="taskDurationText" layoutX="421.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tasks duration" visible="false" />
-      <ComboBox fx:id="simulationTypeComboBox" layoutX="228.0" layoutY="235.0" prefWidth="150.0" />
-      <Text layoutX="230.0" layoutY="231.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Simulation type" />
+      <Text fx:id="numberOfThreadsText" layoutX="23.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of threads" visible="false" />
+      <Text fx:id="numberOfTasksText" layoutX="419.0" layoutY="86.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of tasks" visible="false" />
+      <CheckBox fx:id="randomTaskDurationCheckBox" layoutX="424.0" layoutY="141.0" selected="true" text="Random tasks duration" />
+      <Spinner fx:id="taskDurationSpinner" layoutX="421.0" layoutY="192.0" promptText="Enter integer" visible="false">
+         <valueFactory>
+            <SpinnerValueFactory.IntegerSpinnerValueFactory max="100" min="0" />
+         </valueFactory>
+      </Spinner>
+      <Text fx:id="taskDurationText" layoutX="421.0" layoutY="181.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tasks duration (s)" visible="false" />
+      <ComboBox fx:id="simulationTypeComboBox" layoutX="224.0" layoutY="289.0" prefWidth="150.0" />
+      <Text layoutX="226.0" layoutY="285.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Simulation type" />
 
       <Button layoutX="250.0" layoutY="348.0" mnemonicParsing="false" onAction="#showSimulationPage" text="Start simulation" />
    </children>

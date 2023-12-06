@@ -5,15 +5,19 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public class RandomTaskGenerator implements TaskGenerator {
+public class TaskGeneratorImpl implements TaskGenerator {
     @Override
-    public List<Task> createTasks() {
+    public List<Task> createTasks(int numberOfTasks, int executionTime) {
         Random random = new Random();
-        int numberOfTasks = random.nextInt(100 - 1) + 1;
+        if(numberOfTasks == 0) {
+            numberOfTasks = random.nextInt(100 - 1) + 1;
+        }
 
         List<Task> tasks = new ArrayList<>();
         for(int i = 0; i < numberOfTasks; ++i) {
-            int executionTime = random.nextInt(30 - 1) + 1;
+            if(executionTime == 0) {
+                executionTime = random.nextInt(30 - 1) + 1;
+            }
             tasks.add(new Task(UUID.randomUUID().toString(), executionTime));
         }
 
