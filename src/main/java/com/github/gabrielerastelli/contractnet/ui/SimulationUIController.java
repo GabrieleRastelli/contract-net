@@ -58,6 +58,12 @@ public class SimulationUIController implements TaskUpdateListener, ServerUpdateL
     @FXML
     Label totalExecutionTime;
 
+    @FXML
+    Label tasksExecutedMean;
+
+    @FXML
+    Label tasksExecutedVariance;
+
     final ObservableList<TaskStatus> tasks = FXCollections.observableArrayList();
 
     final ObservableList<ServerWorkload> servers = FXCollections.observableArrayList();
@@ -124,16 +130,18 @@ public class SimulationUIController implements TaskUpdateListener, ServerUpdateL
         Platform.runLater(() -> {
             log.debug("Notified about Server: {} workload: {}", server.getIp(), currentWorkload);
 
-            ServerWorkload key = new ServerWorkload(server.getIp(), null);
+            ServerWorkload key = new ServerWorkload(server.getIp(), null,null, null);
             int index = Collections.binarySearch(servers, key, Comparator.comparing(ServerWorkload::getServerIp));
 
             if (index >= 0) {
                 ServerWorkload serverWorkloadToUpdate = servers.get(index);
+                int tasksExecuted = currentWorkload > serverWorkloadToUpdate.getCurrentWorkload() ? serverWorkloadToUpdate.getTasksExecuted() + 1 : serverWorkloadToUpdate.getTasksExecuted();
+                serverWorkloadToUpdate.setTasksExecuted(tasksExecuted);
                 serverWorkloadToUpdate.setCurrentWorkload(currentWorkload);
 
                 serverTableView.getItems().set(index, serverWorkloadToUpdate);
             } else {
-                ServerWorkload serverWorkloadToUpdate = new ServerWorkload(server.getIp(), currentWorkload);
+                ServerWorkload serverWorkloadToUpdate = new ServerWorkload(server.getIp(), server.getNumberOfThreads(), currentWorkload, 0);
                 serverTableView.getItems().add(serverWorkloadToUpdate);
                 servers.sort(Comparator.comparing(ServerWorkload::getServerIp));
             }
@@ -173,5 +181,30 @@ public class SimulationUIController implements TaskUpdateListener, ServerUpdateL
 
     public void updateTotalExecutionTime(String text) {
         Platform.runLater(() -> totalExecutionTime.setText(text));
+    }
+
+    public double setTasksExecutedMean() {
+        int totalTasksExecuted = 0;
+
+        for (ServerWorkload server : servers) {
+            totalTasksExecuted += server.getTasksExecuted();
+        }
+
+        double mean = (double) totalTasksExecuted / servers.size();
+        Platform.runLater(() -> tasksExecutedMean.setText(String.valueOf(mean)));
+        return mean;
+    }
+
+    public double setTasksExecutedVariance(double mean) {
+        double sumSquaredDifferences = 0;
+
+        for (ServerWorkload server : servers) {
+            double difference = server.getTasksExecuted() - mean;
+            sumSquaredDifferences += difference * difference;
+        }
+
+        double variance = sumSquaredDifferences / servers.size();
+        Platform.runLater(() -> tasksExecutedVariance.setText(String.valueOf(variance)));
+        return variance;
     }
 }

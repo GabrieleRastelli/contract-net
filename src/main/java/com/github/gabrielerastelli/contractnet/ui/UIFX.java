@@ -1,6 +1,7 @@
 package com.github.gabrielerastelli.contractnet.ui;
 
 import com.github.gabrielerastelli.contractnet.be.Simulation;
+import com.github.gabrielerastelli.contractnet.be.SimulationType;
 import com.github.gabrielerastelli.contractnet.be.server.Server;
 import com.github.gabrielerastelli.contractnet.be.server.factory.ServerGeneratorFactory;
 import com.github.gabrielerastelli.contractnet.be.task.factory.TaskGeneratorFactory;
@@ -71,10 +72,17 @@ public class UIFX extends Application {
                 controller.setServerPublisher(server);
             }
 
+            SimulationType type = null;
+            if("ContractNet (Accept first)".equals(simulationType)) {
+                type = SimulationType.CONTRACT_NET_ACCEPT_FIRST;
+            } else if("ContractNet (Balanced)".equals(simulationType)) {
+                type = SimulationType.CONTRACT_NET_BALANCED;
+            }
+
             StopWatch watch = new StopWatch();
             watch.start();
             try {
-                simulation.startSimulation(new TaskGeneratorFactory().createTaskGenerator().createTasks(numberOfTasks, tasksDuration * 1000), servers);
+                simulation.startSimulation(type, new TaskGeneratorFactory().createTaskGenerator().createTasks(numberOfTasks, tasksDuration * 1000), servers);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -87,6 +95,8 @@ public class UIFX extends Application {
                     seconds,
                     remainingMilliseconds)
             );
+            double mean = controller.setTasksExecutedMean();
+            controller.setTasksExecutedVariance(mean);
         }).start();
     }
 

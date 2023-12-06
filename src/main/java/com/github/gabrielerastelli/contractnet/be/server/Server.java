@@ -81,7 +81,7 @@ public class Server implements Runnable, ServerPublisher {
                 if(cfp != null) {
                     if (currentWorkload.size() < numberOfThreads) {
                         log.info("[{}] Making a proposal for task: {}", ip, cfp.getTaskId());
-                        remoteClient.outTuple(new Proposal(Decision.ACCEPT, cfp.getTaskId(), ip));
+                        remoteClient.outTuple(new Proposal(Decision.ACCEPT, cfp.getTaskId(), ip, currentWorkload.size()));
                         ProposalOutcome proposalOutcome = remoteClient.readProposalOutcome(ip);
                         log.info("[{}] Got an outcome for my proposal for task: {}, outcome: {}", ip,
                             cfp.getTaskId(), proposalOutcome.getDecision().name());
@@ -93,7 +93,7 @@ public class Server implements Runnable, ServerPublisher {
                     } else {
                         //log.info("[{}] Rejecting call for proposal for task: {}", ip, cfp.getTaskId());
                         // WARNING: actually not used by master
-                        space.out(new Proposal(Decision.REJECT, cfp.getTaskId(), ip));
+                        space.out(new Proposal(Decision.REJECT, cfp.getTaskId(), ip, currentWorkload.size()));
                     }
                 }
             } catch (TupleSpaceException | RemoteException e) { // TODO handle

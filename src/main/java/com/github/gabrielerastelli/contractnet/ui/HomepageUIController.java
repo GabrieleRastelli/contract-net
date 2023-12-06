@@ -85,7 +85,8 @@ public class HomepageUIController {
         });
 
         simulationTypeComboBox.setItems(FXCollections.observableArrayList(
-                "ContractNet"
+                "ContractNet (Accept first)",
+                "ContractNet (Balanced)"
         ));
 
         simulationTypeComboBox.getSelectionModel().select(0);

@@ -16,9 +16,10 @@ public class ServerGeneratorImpl implements ServerGenerator {
         for(int i = 0; i < numberOfServers; ++i) {
             String ip = random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256);
             if(numberOfThreads == 0) {
-                numberOfThreads = random.nextInt(4 - 1) + 1;
+                servers.add(new Server(ip, random.nextInt(4 - 1) + 1, new ArrayList<>()));
+            } else {
+                servers.add(new Server(ip, numberOfThreads, new ArrayList<>()));
             }
-            servers.add(new Server(ip, numberOfThreads, new ArrayList<>()));
         }
 
         return servers;

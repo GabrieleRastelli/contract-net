@@ -42,7 +42,7 @@ public class RemoteClient {
 
     public  Proposal[] readProposals() throws TupleSpaceException, RemoteException {
         ITuple template = new Tuple().add(new Field().setValue("p")).add(new Field().setType(String.class))
-                .add(new Field().setType(String.class)).add(new Field().setType(String.class));
+                .add(new Field().setType(String.class)).add(new Field().setType(String.class)).add(new Field().setType(Integer.class));
         ITuple[] retrieved = space.ing(template);
         if(retrieved == null || retrieved.length == 0) {
             return null;
@@ -50,7 +50,7 @@ public class RemoteClient {
         Proposal[] proposals = new Proposal[retrieved.length];
         for(int i = 0; i < retrieved.length; ++i) {
             proposals[i] = new Proposal(Decision.valueOf(retrieved[i].get(1).toString()),
-                    retrieved[i].get(2).toString(), retrieved[i].get(3).toString());
+                    retrieved[i].get(2).toString(), retrieved[i].get(3).toString(), Integer.parseInt(retrieved[i].get(4).toString()));
         }
         return proposals;
     }

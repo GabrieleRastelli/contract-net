@@ -13,9 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,7 +24,7 @@ public class Simulation implements TaskPublisher {
 
     List<TaskUpdateListener> listeners;
 
-    public void startSimulation(List<Task> tasks, List<Server> servers) throws Exception {
+    public void startSimulation(SimulationType simulationType, List<Task> tasks, List<Server> servers) throws Exception {
         IRemoteTupleSpace space = RemoteTupleSpace.startTupleSpace();
 
         ExecutorService executor = Executors.newFixedThreadPool(servers.size(), r -> {
@@ -58,13 +56,16 @@ public class Simulation implements TaskPublisher {
                 continue;
             }
 
+            if(SimulationType.CONTRACT_NET_BALANCED.equals(simulationType)) {
+                Arrays.sort(proposals, Comparator.comparingInt(Proposal::getCurrentWorkload));
+            }
+
             for (Proposal proposal : proposals) {
                 if (Decision.ACCEPT.equals(proposal.getDecision())) {
                     if (taskAssignedMap.get(proposal.getTaskId())) { /* reject others */
                         log.info("Rejecting proposal for task: {} from server: {} as task is already assigned", proposal.getTaskId(), proposal.getServerIp());
                         remoteClient.outTuple(new ProposalOutcome(Decision.REJECT, proposal.getTaskId(), proposal.getServerIp()));
                     } else { /* accept first */
-                        // TODO base master decision also on other aspects rather than simple thread availability
                         taskAssignedMap.put(proposal.getTaskId(), true);
                         ++completedTasks;
 
@@ -78,6 +79,7 @@ public class Simulation implements TaskPublisher {
                     }
                 }
             }
+
         }
 
         log.info("Waiting for tasks completion");

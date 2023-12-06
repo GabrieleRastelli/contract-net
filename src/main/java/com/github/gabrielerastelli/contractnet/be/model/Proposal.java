@@ -18,10 +18,14 @@ public class Proposal extends Tuple {
 
     String serverIp;
 
-    public Proposal(Decision decision, String taskId, String serverIp) {
+    int currentWorkload;
+
+    public Proposal(Decision decision, String taskId, String serverIp, int currentWorkload) {
         this.decision = decision;
         this.taskId = taskId;
         this.serverIp = serverIp;
-        add(new Field().setValue(TUPLE_ID)).add(new Field().setValue(decision.name())).add(new Field().setValue(taskId)).add(new Field().setValue(serverIp));
+        this.currentWorkload = currentWorkload;
+        add(new Field().setValue(TUPLE_ID)).add(new Field().setValue(decision.name()))
+                .add(new Field().setValue(taskId)).add(new Field().setValue(serverIp)).add(new Field().setValue(currentWorkload));
     }
 }

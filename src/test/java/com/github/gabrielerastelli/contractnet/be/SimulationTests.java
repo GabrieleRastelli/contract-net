@@ -16,7 +16,7 @@ public class SimulationTests {
 
         List<Task> tasks = List.of(new Task(UUID.randomUUID().toString(), 3000));
 
-        new Simulation(new ArrayList<>()).startSimulation(tasks, servers);
+        new Simulation(new ArrayList<>()).startSimulation(SimulationType.CONTRACT_NET_ACCEPT_FIRST, tasks, servers);
     }
 
     @Test
@@ -26,7 +26,7 @@ public class SimulationTests {
         List<Task> tasks = List.of(new Task(UUID.randomUUID().toString(), 3000),
                 new Task(UUID.randomUUID().toString(), 3000));
 
-        new Simulation(new ArrayList<>()).startSimulation(tasks, servers);
+        new Simulation(new ArrayList<>()).startSimulation(SimulationType.CONTRACT_NET_ACCEPT_FIRST, tasks, servers);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class SimulationTests {
 
         List<Task> tasks = List.of(new Task(UUID.randomUUID().toString(), 3000));
 
-        new Simulation(new ArrayList<>()).startSimulation(tasks, servers);
+        new Simulation(new ArrayList<>()).startSimulation(SimulationType.CONTRACT_NET_ACCEPT_FIRST, tasks, servers);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class SimulationTests {
         List<Task> tasks = List.of(new Task(UUID.randomUUID().toString(), 3000),
                 new Task(UUID.randomUUID().toString(), 3000));
 
-        new Simulation(new ArrayList<>()).startSimulation(tasks, servers);
+        new Simulation(new ArrayList<>()).startSimulation(SimulationType.CONTRACT_NET_ACCEPT_FIRST, tasks, servers);
     }
 
     @Test
@@ -62,6 +62,6 @@ public class SimulationTests {
                 new Task(UUID.randomUUID().toString(), 3000),
                 new Task(UUID.randomUUID().toString(), 3000));
 
-        new Simulation(new ArrayList<>()).startSimulation(tasks, servers);
+        new Simulation(new ArrayList<>()).startSimulation(SimulationType.CONTRACT_NET_ACCEPT_FIRST, tasks, servers);
     }
 }

@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="800.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.gabrielerastelli.contractnet.ui.SimulationUIController">
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.gabrielerastelli.contractnet.ui.SimulationUIController">
    <children>
       <TableView fx:id="taskTableView" minWidth="350.0" prefHeight="800.0" prefWidth="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columns>
@@ -22,16 +22,26 @@
             </TableColumn>
          </columns>
       </TableView>
-      <TableView fx:id="serverTableView" layoutX="350.0" minWidth="350" prefHeight="416.0" prefWidth="350.0">
+      <TableView fx:id="serverTableView" layoutX="350.0" minWidth="350" prefHeight="391.0" prefWidth="500.0">
          <columns>
             <TableColumn fx:id="serverIp" text="Server">
                <cellValueFactory>
                   <PropertyValueFactory property="serverIp" />
                </cellValueFactory>
             </TableColumn>
+            <TableColumn fx:id="numberOfThreads" prefWidth="121.0" text="Max number of threads">
+               <cellValueFactory>
+                  <PropertyValueFactory property="numberOfThreads" />
+               </cellValueFactory>
+            </TableColumn>
             <TableColumn fx:id="currentWorkload" prefWidth="121.0" text="Current workload">
                <cellValueFactory>
                   <PropertyValueFactory property="currentWorkload" />
+               </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="tasksExecuted" prefWidth="121.0" text="Tasks executed">
+               <cellValueFactory>
+                  <PropertyValueFactory property="tasksExecuted" />
                </cellValueFactory>
             </TableColumn>
          </columns>
@@ -44,14 +54,36 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </LineChart>
-      <ComboBox fx:id="serverWorkloadComboBox" layoutX="700.0" layoutY="391.0" onAction="#handleDropdownAction" prefWidth="150.0" />
-      <Label layoutX="699.0" layoutY="-4.0" text="Execution time (s):">
+      <ComboBox fx:id="serverWorkloadComboBox" layoutX="699.0" layoutY="395.0" onAction="#handleDropdownAction" prefWidth="150.0" />
+      <Label layoutX="850.0" text="Execution time (s):">
          <font>
             <Font size="24.0" />
-         </font></Label>
-      <Label fx:id="totalExecutionTime" layoutX="699.0" layoutY="25.0" prefHeight="18.0" prefWidth="81.0" text="">
+         </font>
+      </Label>
+      <Label fx:id="totalExecutionTime" layoutX="850.0" layoutY="29.0" prefHeight="18.0" prefWidth="81.0" text="">
          <font>
             <Font size="24.0" />
-         </font></Label>
+         </font>
+      </Label>
+      <Label layoutX="849.0" layoutY="64.0" text="Tasks executed mean:">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="tasksExecutedMean" layoutX="849.0" layoutY="93.0" prefHeight="18.0" prefWidth="81.0" text="">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="849.0" layoutY="131.0" text="Tasks executed variance:">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="tasksExecutedVariance" layoutX="849.0" layoutY="160.0" prefHeight="18.0" prefWidth="81.0" text="">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

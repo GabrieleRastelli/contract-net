@@ -10,5 +10,9 @@ import lombok.Setter;
 public class ServerWorkload {
     private String serverIp;
 
+    private Integer numberOfThreads;
+
     private Integer currentWorkload;
+
+    private Integer tasksExecuted;
 }
