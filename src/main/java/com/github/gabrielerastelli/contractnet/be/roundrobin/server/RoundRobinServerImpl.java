@@ -1,11 +1,11 @@
-package com.github.gabrielerastelli.contractnet.be.contractnet.server;
+package com.github.gabrielerastelli.contractnet.be.roundrobin.server;
 
-import com.github.gabrielerastelli.contractnet.be.contractnet.model.*;
-import com.github.gabrielerastelli.contractnet.be.contractnet.remote.ContractNetRemoteClient;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.model.TaskAssignation;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.model.TaskCompletion;
 import com.github.gabrielerastelli.contractnet.be.remote.IRemoteTupleSpace;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.remote.RoundRobinRemoteClient;
 import com.github.gabrielerastelli.contractnet.be.server.IServer;
 import com.github.gabrielerastelli.contractnet.be.task.Task;
-import com.github.gabrielerastelli.contractnet.interfaces.ServerPublisher;
 import com.github.gabrielerastelli.contractnet.interfaces.ServerUpdateListener;
 import lights.interfaces.TupleSpaceException;
 import lombok.AccessLevel;
@@ -27,11 +27,11 @@ import java.util.concurrent.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
-public class ContractNetServerImpl extends IServer {
+public class RoundRobinServerImpl extends IServer {
 
     List<ServerUpdateListener> listeners;
 
-    public ContractNetServerImpl(String ip, int numberOfThreads, List<ServerUpdateListener> listeners) {
+    public RoundRobinServerImpl(String ip, int numberOfThreads, List<ServerUpdateListener> listeners) {
         super(ip, numberOfThreads);
         this.listeners = listeners;
     }
@@ -54,11 +54,12 @@ public class ContractNetServerImpl extends IServer {
 
         log.info("[{}] Waiting for tasks to perform...", ip);
 
+        List<TaskAssignation> queue = new ArrayList<>();
         List<Future<String>> currentWorkload = new ArrayList<>();
 
         notifyUpdate(this, 0);
 
-        ContractNetRemoteClient remoteClient = new ContractNetRemoteClient(space);
+        RoundRobinRemoteClient roundRobinRemoteClient = new RoundRobinRemoteClient(space);
         while (true) {
             Iterator<Future<String>> i = currentWorkload.iterator();
             while(i.hasNext()) {
@@ -69,7 +70,7 @@ public class ContractNetServerImpl extends IServer {
                         taskId = task.get();
                         i.remove();
                         log.info("[{}] Completed task: {}, putting confirmation in tuple space", ip, taskId);
-                        remoteClient.outTuple(new TaskCompletion(taskId, ip));
+                        roundRobinRemoteClient.outTuple(new TaskCompletion(taskId, ip));
                         notifyUpdate(this, currentWorkload.size());
                     }
                 } catch (RemoteException | TupleSpaceException | InterruptedException | ExecutionException e) {
@@ -77,28 +78,32 @@ public class ContractNetServerImpl extends IServer {
                 }
             }
 
-            try {
-                CallForProposal cfp = remoteClient.readCallForProposal();
-                if(cfp != null) {
-                    if (currentWorkload.size() < numberOfThreads) {
-                        log.info("[{}] Making a proposal for task: {}", ip, cfp.getTaskId());
-                        remoteClient.outTuple(new Proposal(Decision.ACCEPT, cfp.getTaskId(), ip, currentWorkload.size()));
-                        ProposalOutcome proposalOutcome = remoteClient.readProposalOutcome(ip);
-                        log.info("[{}] Got an outcome for my proposal for task: {}, outcome: {}", ip,
-                            cfp.getTaskId(), proposalOutcome.getDecision().name());
-                        if(Decision.ACCEPT.equals(proposalOutcome.getDecision())) {
-                            Callable<String> task = Task.getCallableTask(cfp.getTaskId(), cfp.getExecutionTime());
-                            currentWorkload.add(executor.submit(task));
-                            notifyUpdate(this, currentWorkload.size());
-                        }
-                    } else {
-                        //log.info("[{}] Rejecting call for proposal for task: {}", ip, cfp.getTaskId());
-                        // WARNING: actually not used by master
-                        space.out(new Proposal(Decision.REJECT, cfp.getTaskId(), ip, currentWorkload.size()));
-                    }
+            if(currentWorkload.size() < numberOfThreads && !queue.isEmpty()) {
+                Iterator<TaskAssignation> taskAssignationIterator = queue.listIterator();
+                while(currentWorkload.size() < numberOfThreads && taskAssignationIterator.hasNext()) {
+                    TaskAssignation ta = taskAssignationIterator.next();
+                    Callable<String> task = Task.getCallableTask(ta.getTaskId(), ta.getExecutionTime());
+                    currentWorkload.add(executor.submit(task));
+                    notifyUpdate(this, currentWorkload.size());
+                    taskAssignationIterator.remove();
                 }
+            }
+
+            TaskAssignation ta;
+            try {
+                ta = roundRobinRemoteClient.readTaskAssignation(ip);
             } catch (TupleSpaceException | RemoteException e) { // TODO handle
                 throw new RuntimeException(e);
+            }
+
+            if(ta != null) {
+                if(currentWorkload.size() < numberOfThreads) {
+                    Callable<String> task = Task.getCallableTask(ta.getTaskId(), ta.getExecutionTime());
+                    currentWorkload.add(executor.submit(task));
+                    notifyUpdate(this, currentWorkload.size());
+                } else { /* add to queue */
+                    queue.add(ta);
+                }
             }
         }
     }
@@ -114,4 +119,5 @@ public class ContractNetServerImpl extends IServer {
             listener.onUpdate(server, currentWorkload);
         }
     }
+
 }

@@ -1,7 +1,7 @@
-package com.github.gabrielerastelli.contractnet.be.randomassignment.remote;
+package com.github.gabrielerastelli.contractnet.be.roundrobin.remote;
 
-import com.github.gabrielerastelli.contractnet.be.randomassignment.model.TaskCompletion;
-import com.github.gabrielerastelli.contractnet.be.randomassignment.model.TaskAssignation;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.model.TaskCompletion;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.model.TaskAssignation;
 import com.github.gabrielerastelli.contractnet.be.remote.IRemoteTupleSpace;
 import lights.Field;
 import lights.Tuple;
@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 import java.rmi.RemoteException;
 
 @AllArgsConstructor
-public class RandomAssignmentRemoteClient {
+public class RoundRobinRemoteClient {
 
     IRemoteTupleSpace space;
 
@@ -40,4 +40,5 @@ public class RandomAssignmentRemoteClient {
         }
         return completedTasks;
     }
+
 }

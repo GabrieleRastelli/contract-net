@@ -1,10 +1,10 @@
-package com.github.gabrielerastelli.contractnet.be.randomassignment;
+package com.github.gabrielerastelli.contractnet.be.roundrobin;
 
 import com.github.gabrielerastelli.contractnet.be.Simulation;
 import com.github.gabrielerastelli.contractnet.be.SimulationType;
-import com.github.gabrielerastelli.contractnet.be.randomassignment.model.TaskCompletion;
-import com.github.gabrielerastelli.contractnet.be.randomassignment.model.TaskAssignation;
-import com.github.gabrielerastelli.contractnet.be.randomassignment.remote.RandomAssignmentRemoteClient;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.model.TaskAssignation;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.model.TaskCompletion;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.remote.RoundRobinRemoteClient;
 import com.github.gabrielerastelli.contractnet.be.remote.IRemoteTupleSpace;
 import com.github.gabrielerastelli.contractnet.be.remote.RemoteTupleSpace;
 import com.github.gabrielerastelli.contractnet.be.server.IServer;
@@ -23,13 +23,13 @@ import java.util.concurrent.Executors;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class RandomAssignmentSimulation extends Simulation {
+public class RoundRobinSimulation extends Simulation {
 
     List<TaskUpdateListener> listeners;
 
     @Override
     public void startSimulation(SimulationType simulationType, List<Task> tasks, List<IServer> servers) throws Exception {
-        log.info("Random assignment simulation");
+        log.info("Round robin assignment simulation");
 
         IRemoteTupleSpace space = RemoteTupleSpace.startTupleSpace();
 
@@ -42,17 +42,21 @@ public class RandomAssignmentSimulation extends Simulation {
             executor.submit(server);
         }
 
-        RandomAssignmentRemoteClient remoteClient = new RandomAssignmentRemoteClient(space);
+        RoundRobinRemoteClient remoteClient = new RoundRobinRemoteClient(space);
+
+        int serverIndex = 0;
 
         /* populate tuple space with tasks assignations */
-        Collections.shuffle(tasks);
-        for(Task task : tasks) {
-            Collections.shuffle(servers);
-            IServer randomServer = servers.get(0);
-            log.info("Assigning task: {} to server: {}", task.getId(), randomServer.getIp());
-            TaskAssignation ta = new TaskAssignation(task.getId(), task.getExecutionTime(), randomServer.getIp());
+        for (Task task : tasks) {
+            IServer roundRobinServer = servers.get(serverIndex);
+
+            log.info("Assigning task: {} to server: {}", task.getId(), roundRobinServer.getIp());
+
+            TaskAssignation ta = new TaskAssignation(task.getId(), task.getExecutionTime(), roundRobinServer.getIp());
             remoteClient.outTuple(ta);
             notifyUpdate(task.getId(), "assigned");
+
+            serverIndex = (serverIndex + 1) % servers.size();
         }
 
         log.info("Waiting for tasks completion");

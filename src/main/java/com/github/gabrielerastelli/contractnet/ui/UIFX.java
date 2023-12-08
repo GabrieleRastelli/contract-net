@@ -4,6 +4,8 @@ import com.github.gabrielerastelli.contractnet.be.Simulation;
 import com.github.gabrielerastelli.contractnet.be.SimulationType;
 import com.github.gabrielerastelli.contractnet.be.contractnet.ContractNetSimulation;
 import com.github.gabrielerastelli.contractnet.be.randomassignment.RandomAssignmentSimulation;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.RoundRobinSimulation;
+import com.github.gabrielerastelli.contractnet.be.roundrobin.server.RoundRobinServerImpl;
 import com.github.gabrielerastelli.contractnet.be.server.IServer;
 import com.github.gabrielerastelli.contractnet.be.server.factory.ServerGeneratorFactory;
 import com.github.gabrielerastelli.contractnet.be.task.factory.TaskGeneratorFactory;
@@ -74,6 +76,8 @@ public class UIFX extends Application {
                 type = SimulationType.CONTRACT_NET_BALANCED;
             } else if("Random A Priori".equals(simulationType)) {
                 type = SimulationType.RANDOM_A_PRIORI;
+            } else if("Round Robin".equals(simulationType)) {
+                type = SimulationType.ROUND_ROBIN;
             }
 
             Simulation simulation;
@@ -84,6 +88,9 @@ public class UIFX extends Application {
                     break;
                 case RANDOM_A_PRIORI:
                     simulation = new RandomAssignmentSimulation(new ArrayList<>());
+                    break;
+                case ROUND_ROBIN:
+                    simulation = new RoundRobinSimulation(new ArrayList<>());
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported simulation " + type);
