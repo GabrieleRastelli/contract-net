@@ -2,7 +2,9 @@ package com.github.gabrielerastelli.contractnet.ui;
 
 import com.github.gabrielerastelli.contractnet.be.Simulation;
 import com.github.gabrielerastelli.contractnet.be.SimulationType;
-import com.github.gabrielerastelli.contractnet.be.server.Server;
+import com.github.gabrielerastelli.contractnet.be.contractnet.ContractNetSimulation;
+import com.github.gabrielerastelli.contractnet.be.randomassignment.RandomAssignmentSimulation;
+import com.github.gabrielerastelli.contractnet.be.server.IServer;
 import com.github.gabrielerastelli.contractnet.be.server.factory.ServerGeneratorFactory;
 import com.github.gabrielerastelli.contractnet.be.task.factory.TaskGeneratorFactory;
 import javafx.application.Application;
@@ -64,19 +66,33 @@ public class UIFX extends Application {
 
         // Run simulation on a separate thread
         new Thread(() -> {
-            Simulation simulation = new Simulation(new ArrayList<>());
-            controller.setTaskPublisher(simulation);
-
-            List<Server> servers = new ServerGeneratorFactory().createServerGenerator().createServers(numberOfServers, numberOfThreads);
-            for (Server server : servers) {
-                controller.setServerPublisher(server);
-            }
 
             SimulationType type = null;
             if("ContractNet (Accept first)".equals(simulationType)) {
                 type = SimulationType.CONTRACT_NET_ACCEPT_FIRST;
             } else if("ContractNet (Balanced)".equals(simulationType)) {
                 type = SimulationType.CONTRACT_NET_BALANCED;
+            } else if("Random A Priori".equals(simulationType)) {
+                type = SimulationType.RANDOM_A_PRIORI;
+            }
+
+            Simulation simulation;
+            switch (type) {
+                case CONTRACT_NET_ACCEPT_FIRST:
+                case CONTRACT_NET_BALANCED:
+                    simulation = new ContractNetSimulation(new ArrayList<>());
+                    break;
+                case RANDOM_A_PRIORI:
+                    simulation = new RandomAssignmentSimulation(new ArrayList<>());
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported simulation " + type);
+            }
+            controller.setTaskPublisher(simulation);
+
+            List<IServer> servers = new ServerGeneratorFactory().createServerGenerator().createServers(type, numberOfServers, numberOfThreads);
+            for (IServer server : servers) {
+                controller.setServerPublisher(server);
             }
 
             StopWatch watch = new StopWatch();

@@ -1,14 +1,14 @@
-package com.github.gabrielerastelli.contractnet.be.server;
+package com.github.gabrielerastelli.contractnet.be.contractnet.server;
 
-import com.github.gabrielerastelli.contractnet.be.model.*;
+import com.github.gabrielerastelli.contractnet.be.contractnet.model.*;
+import com.github.gabrielerastelli.contractnet.be.contractnet.remote.ContractNetRemoteClient;
 import com.github.gabrielerastelli.contractnet.be.remote.IRemoteTupleSpace;
-import com.github.gabrielerastelli.contractnet.be.remote.RemoteClient;
+import com.github.gabrielerastelli.contractnet.be.server.IServer;
 import com.github.gabrielerastelli.contractnet.be.task.Task;
 import com.github.gabrielerastelli.contractnet.interfaces.ServerPublisher;
 import com.github.gabrielerastelli.contractnet.interfaces.ServerUpdateListener;
 import lights.interfaces.TupleSpaceException;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
@@ -25,17 +25,18 @@ import java.util.concurrent.*;
 
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
 @Getter
 @Setter
-public class Server implements Runnable, ServerPublisher {
-
-    String ip;
-
-    int numberOfThreads;
+public class ContractNetServerImpl extends IServer implements ServerPublisher {
 
     List<ServerUpdateListener> listeners;
 
+    public ContractNetServerImpl(String ip, int numberOfThreads, List<ServerUpdateListener> listeners) {
+        super(ip, numberOfThreads);
+        this.listeners = listeners;
+    }
+
+    @Override
     public void run() {
         IRemoteTupleSpace space;
         try {
@@ -57,7 +58,7 @@ public class Server implements Runnable, ServerPublisher {
 
         notifyUpdate(this, 0);
 
-        RemoteClient remoteClient = new RemoteClient(space);
+        ContractNetRemoteClient remoteClient = new ContractNetRemoteClient(space);
         while (true) {
             Iterator<Future<String>> i = currentWorkload.iterator();
             while(i.hasNext()) {
@@ -108,7 +109,7 @@ public class Server implements Runnable, ServerPublisher {
     }
 
     @Override
-    public void notifyUpdate(Server server, int currentWorkload) {
+    public void notifyUpdate(IServer server, int currentWorkload) {
         for(ServerUpdateListener listener : listeners) {
             listener.onUpdate(server, currentWorkload);
         }

@@ -86,7 +86,8 @@ public class HomepageUIController {
 
         simulationTypeComboBox.setItems(FXCollections.observableArrayList(
                 "ContractNet (Accept first)",
-                "ContractNet (Balanced)"
+                "ContractNet (Balanced)",
+                "Random A Priori"
         ));
 
         simulationTypeComboBox.getSelectionModel().select(0);

@@ -1,4 +1,4 @@
-package com.github.gabrielerastelli.contractnet.be.model;
+package com.github.gabrielerastelli.contractnet.be.contractnet.model;
 
 import lights.Field;
 import lights.Tuple;
@@ -8,9 +8,9 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class Proposal extends Tuple {
+public class ProposalOutcome extends Tuple {
 
-    private static final String TUPLE_ID = "p";
+    private static final String TUPLE_ID = "po";
 
     Decision decision;
 
@@ -18,14 +18,11 @@ public class Proposal extends Tuple {
 
     String serverIp;
 
-    int currentWorkload;
-
-    public Proposal(Decision decision, String taskId, String serverIp, int currentWorkload) {
+    public ProposalOutcome(Decision decision, String taskId, String serverIp) {
         this.decision = decision;
         this.taskId = taskId;
         this.serverIp = serverIp;
-        this.currentWorkload = currentWorkload;
         add(new Field().setValue(TUPLE_ID)).add(new Field().setValue(decision.name()))
-                .add(new Field().setValue(taskId)).add(new Field().setValue(serverIp)).add(new Field().setValue(currentWorkload));
+                .add(new Field().setValue(taskId)).add(new Field().setValue(serverIp));
     }
 }

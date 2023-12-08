@@ -1,6 +1,7 @@
-package com.github.gabrielerastelli.contractnet.be.remote;
+package com.github.gabrielerastelli.contractnet.be.contractnet.remote;
 
-import com.github.gabrielerastelli.contractnet.be.model.*;
+import com.github.gabrielerastelli.contractnet.be.contractnet.model.*;
+import com.github.gabrielerastelli.contractnet.be.remote.IRemoteTupleSpace;
 import lights.Field;
 import lights.Tuple;
 import lights.interfaces.ITuple;
@@ -10,7 +11,7 @@ import lombok.AllArgsConstructor;
 import java.rmi.RemoteException;
 
 @AllArgsConstructor
-public class RemoteClient {
+public class ContractNetRemoteClient {
 
     IRemoteTupleSpace space;
 

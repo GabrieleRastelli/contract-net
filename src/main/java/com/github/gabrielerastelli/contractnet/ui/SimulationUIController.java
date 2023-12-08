@@ -1,6 +1,7 @@
 package com.github.gabrielerastelli.contractnet.ui;
 
-import com.github.gabrielerastelli.contractnet.be.server.Server;
+import com.github.gabrielerastelli.contractnet.be.contractnet.server.ContractNetServerImpl;
+import com.github.gabrielerastelli.contractnet.be.server.IServer;
 import com.github.gabrielerastelli.contractnet.interfaces.ServerPublisher;
 import com.github.gabrielerastelli.contractnet.interfaces.ServerUpdateListener;
 import com.github.gabrielerastelli.contractnet.interfaces.TaskPublisher;
@@ -47,7 +48,13 @@ public class SimulationUIController implements TaskUpdateListener, ServerUpdateL
     TableColumn<ServerWorkload, String> serverIp;
 
     @FXML
+    TableColumn<ServerWorkload, Integer> numberOfThreads;
+
+    @FXML
     TableColumn<ServerWorkload, Integer> currentWorkload;
+
+    @FXML
+    TableColumn<ServerWorkload, Integer> tasksExecuted;
 
     @FXML
     ComboBox<String> serverWorkloadComboBox;
@@ -79,7 +86,9 @@ public class SimulationUIController implements TaskUpdateListener, ServerUpdateL
         taskTableView.setItems(tasks);
 
         serverIp.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getServerIp()));
+        numberOfThreads.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getNumberOfThreads()).asObject());
         currentWorkload.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getCurrentWorkload()).asObject());
+        tasksExecuted.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getTasksExecuted()).asObject());
 
         serverTableView.setItems(servers);
 
@@ -126,7 +135,7 @@ public class SimulationUIController implements TaskUpdateListener, ServerUpdateL
     }
 
     @Override
-    public void onUpdate(Server server, int currentWorkload) {
+    public void onUpdate(IServer server, int currentWorkload) {
         Platform.runLater(() -> {
             log.debug("Notified about Server: {} workload: {}", server.getIp(), currentWorkload);
 
