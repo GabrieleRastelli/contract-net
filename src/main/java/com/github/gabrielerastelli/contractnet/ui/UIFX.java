@@ -8,6 +8,7 @@ import com.github.gabrielerastelli.contractnet.be.roundrobin.RoundRobinSimulatio
 import com.github.gabrielerastelli.contractnet.be.roundrobin.server.RoundRobinServerImpl;
 import com.github.gabrielerastelli.contractnet.be.server.IServer;
 import com.github.gabrielerastelli.contractnet.be.server.factory.ServerGeneratorFactory;
+import com.github.gabrielerastelli.contractnet.be.task.Task;
 import com.github.gabrielerastelli.contractnet.be.task.factory.TaskGeneratorFactory;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -102,10 +103,12 @@ public class UIFX extends Application {
                 controller.setServerPublisher(server);
             }
 
+            List<Task> tasks = new TaskGeneratorFactory().createTaskGenerator().createTasks(numberOfTasks, tasksDuration);
+
             StopWatch watch = new StopWatch();
             watch.start();
             try {
-                simulation.startSimulation(type, new TaskGeneratorFactory().createTaskGenerator().createTasks(numberOfTasks, tasksDuration * 1000), servers);
+                simulation.startSimulation(type, tasks, servers);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -120,6 +123,9 @@ public class UIFX extends Application {
             );
             double mean = controller.setTasksExecutedMean();
             controller.setTasksExecutedVariance(mean);
+
+            double throughput = (double) tasks.size() / seconds;
+            controller.setThroughput(throughput);
         }).start();
     }
 

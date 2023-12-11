@@ -71,6 +71,9 @@ public class SimulationUIController implements TaskUpdateListener, ServerUpdateL
     @FXML
     Label tasksExecutedVariance;
 
+    @FXML
+    Label throughput;
+
     final ObservableList<TaskStatus> tasks = FXCollections.observableArrayList();
 
     final ObservableList<ServerWorkload> servers = FXCollections.observableArrayList();
@@ -215,5 +218,9 @@ public class SimulationUIController implements TaskUpdateListener, ServerUpdateL
         double variance = sumSquaredDifferences / servers.size();
         Platform.runLater(() -> tasksExecutedVariance.setText(String.valueOf(variance)));
         return variance;
+    }
+
+    public void setThroughput(double throughput) {
+        Platform.runLater(() -> this.throughput.setText(String.valueOf(throughput)));
     }
 }

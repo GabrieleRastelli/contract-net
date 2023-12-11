@@ -16,9 +16,9 @@ public class TaskGeneratorImpl implements TaskGenerator {
         List<Task> tasks = new ArrayList<>();
         for(int i = 0; i < numberOfTasks; ++i) {
             if(executionTime == 0) {
-                executionTime = random.nextInt(5000 - 1000) + 1000;
+                executionTime = random.nextInt(5 - 1) + 1;
             }
-            tasks.add(new Task(UUID.randomUUID().toString(), executionTime));
+            tasks.add(new Task(UUID.randomUUID().toString(), executionTime * 1000));
         }
 
         return tasks;
