@@ -88,7 +88,8 @@ public class HomepageUIController {
                 "ContractNet (Accept first)",
                 "ContractNet (Balanced)",
                 "Random A Priori",
-                "Round Robin"
+                "Round Robin",
+                "Decentralized"
         ));
 
         simulationTypeComboBox.getSelectionModel().select(0);

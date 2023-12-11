@@ -2,6 +2,7 @@ package com.github.gabrielerastelli.contractnet.be.server;
 
 import com.github.gabrielerastelli.contractnet.be.SimulationType;
 import com.github.gabrielerastelli.contractnet.be.contractnet.server.ContractNetServerImpl;
+import com.github.gabrielerastelli.contractnet.be.decentralized.server.DecentralizedServerImpl;
 import com.github.gabrielerastelli.contractnet.be.randomassignment.server.RandomAssignementServerImpl;
 import com.github.gabrielerastelli.contractnet.be.roundrobin.server.RoundRobinServerImpl;
 
@@ -28,6 +29,8 @@ public class ServerGeneratorImpl implements ServerGenerator {
                     servers.add(new RandomAssignementServerImpl(ip, random.nextInt(4 - 1) + 1, new ArrayList<>()));
                 } else if (SimulationType.ROUND_ROBIN.equals(simulationType)) {
                     servers.add(new RoundRobinServerImpl(ip, random.nextInt(4 - 1) + 1, new ArrayList<>()));
+                } else if (SimulationType.DECENTRALIZED.equals(simulationType)) {
+                    servers.add(new DecentralizedServerImpl(ip, random.nextInt(4 - 1) + 1, new ArrayList<>()));
                 }
             } else {
                 if(contractNet) {
@@ -36,8 +39,9 @@ public class ServerGeneratorImpl implements ServerGenerator {
                     servers.add(new RandomAssignementServerImpl(ip, numberOfThreads, new ArrayList<>()));
                 } else if (SimulationType.ROUND_ROBIN.equals(simulationType)) {
                     servers.add(new RoundRobinServerImpl(ip, numberOfThreads, new ArrayList<>()));
+                } else if (SimulationType.DECENTRALIZED.equals(simulationType)) {
+                    servers.add(new DecentralizedServerImpl(ip, numberOfThreads, new ArrayList<>()));
                 }
-                servers.add(new ContractNetServerImpl(ip, numberOfThreads, new ArrayList<>()));
             }
         }
 

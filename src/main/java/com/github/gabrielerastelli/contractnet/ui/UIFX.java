@@ -3,6 +3,7 @@ package com.github.gabrielerastelli.contractnet.ui;
 import com.github.gabrielerastelli.contractnet.be.Simulation;
 import com.github.gabrielerastelli.contractnet.be.SimulationType;
 import com.github.gabrielerastelli.contractnet.be.contractnet.ContractNetSimulation;
+import com.github.gabrielerastelli.contractnet.be.decentralized.DecentralizedSimulation;
 import com.github.gabrielerastelli.contractnet.be.randomassignment.RandomAssignmentSimulation;
 import com.github.gabrielerastelli.contractnet.be.roundrobin.RoundRobinSimulation;
 import com.github.gabrielerastelli.contractnet.be.roundrobin.server.RoundRobinServerImpl;
@@ -79,6 +80,8 @@ public class UIFX extends Application {
                 type = SimulationType.RANDOM_A_PRIORI;
             } else if("Round Robin".equals(simulationType)) {
                 type = SimulationType.ROUND_ROBIN;
+            } else if("Decentralized".equals(simulationType)) {
+                type = SimulationType.DECENTRALIZED;
             }
 
             Simulation simulation;
@@ -92,6 +95,9 @@ public class UIFX extends Application {
                     break;
                 case ROUND_ROBIN:
                     simulation = new RoundRobinSimulation(new ArrayList<>());
+                    break;
+                case DECENTRALIZED:
+                    simulation = new DecentralizedSimulation(new ArrayList<>());
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported simulation " + type);
