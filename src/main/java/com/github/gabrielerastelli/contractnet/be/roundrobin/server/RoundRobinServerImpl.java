@@ -54,7 +54,6 @@ public class RoundRobinServerImpl extends IServer {
 
         log.info("[{}] Waiting for tasks to perform...", ip);
 
-        List<TaskAssignation> queue = new ArrayList<>();
         List<Future<String>> currentWorkload = new ArrayList<>();
 
         notifyUpdate(this, 0);
@@ -78,31 +77,18 @@ public class RoundRobinServerImpl extends IServer {
                 }
             }
 
-            if(currentWorkload.size() < numberOfThreads && !queue.isEmpty()) {
-                Iterator<TaskAssignation> taskAssignationIterator = queue.listIterator();
-                while(currentWorkload.size() < numberOfThreads && taskAssignationIterator.hasNext()) {
-                    TaskAssignation ta = taskAssignationIterator.next();
-                    Callable<String> task = Task.getCallableTask(ta.getTaskId(), ta.getExecutionTime());
-                    currentWorkload.add(executor.submit(task));
-                    notifyUpdate(this, currentWorkload.size());
-                    taskAssignationIterator.remove();
+            if(currentWorkload.size() < numberOfThreads) {
+                TaskAssignation ta;
+                try {
+                    ta = roundRobinRemoteClient.readTaskAssignation(ip);
+                } catch (TupleSpaceException | RemoteException e) { // TODO handle
+                    throw new RuntimeException(e);
                 }
-            }
 
-            TaskAssignation ta;
-            try {
-                ta = roundRobinRemoteClient.readTaskAssignation(ip);
-            } catch (TupleSpaceException | RemoteException e) { // TODO handle
-                throw new RuntimeException(e);
-            }
-
-            if(ta != null) {
-                if(currentWorkload.size() < numberOfThreads) {
+                if(ta != null) {
                     Callable<String> task = Task.getCallableTask(ta.getTaskId(), ta.getExecutionTime());
                     currentWorkload.add(executor.submit(task));
                     notifyUpdate(this, currentWorkload.size());
-                } else { /* add to queue */
-                    queue.add(ta);
                 }
             }
         }
